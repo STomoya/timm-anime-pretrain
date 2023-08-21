@@ -1,0 +1,39 @@
+services:
+  torch:
+    build:
+      context: .
+      dockerfile: ./docker/torch/Dockerfile
+      args:
+        - BASE_TORCH_VERSION=2.0.1
+        - BASE_CUDA_VERSION=11.7
+        - BASE_CUDNN_VERSION=8
+        - UID=${UID}
+        - USERNAME=torchuser
+
+    volumes:
+      - type: bind
+        source: .
+        target: ${WORKING_DIR}
+      - type: bind
+        source: ${DATASET_DIR}
+        target: ${WORKING_DIR}/data
+
+    shm_size: '16gb'
+    init: true
+    working_dir: ${WORKING_DIR}
+    environment:
+      - CUDA_HOME=${CUDA_HOME}
+      - XDG_CACHE_HOME=${XDG_CACHE_HOME}
+      - TORCH_EXTENSIONS_DIR=${XDG_CACHE_HOME}/${TORCH_EXTENSIONS_DIR}
+      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN}
+    entrypoint: []
+    command: ["/bin/bash", "./command.sh"]
+    user: ${UID:-1000}
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              device_ids: ['0']
