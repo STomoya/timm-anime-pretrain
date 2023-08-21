@@ -1,0 +1,124 @@
+defaults:
+  - _self_
+
+dryrun: false
+
+env:
+  strategy: ddp
+  compile: false
+  amp: true
+
+reproduce:
+  seed: 3407
+  use_deterministic_algorithm: true
+  warn_only: true
+  cudnn_benchmark: false
+
+run:
+  folder: checkpoint
+  name: ${config.model.model_name}
+  tag: date
+
+config:
+
+  data:
+    dataset_root: ./data/dataset
+    label_mapping_csv: ./data/dataset/label_mapping.csv
+    label_is_indexed: false
+
+    image_size: 224
+    test_image_size: 224
+    # interplation mode
+    #   0: nearest
+    #   1: lanczos
+    #   2: bilinear
+    #   3: bicubic
+    interpolation: 3
+
+    transforms:
+      train:
+        - name: RandomResizedCrop
+          # scale is kept high.
+          scale: [0.5, 1.0]
+          size:
+            - ${config.data.image_size}
+            - ${config.data.image_size}
+          interpolation: ${config.data.interpolation}
+        - name: RandomHorizontalFlip
+          p: 0.5
+        - name: RandAugment
+          num_ops: 2
+          magnitude: 9
+          num_magnitude_bins: 31
+          interpolation: ${config.data.interpolation}
+          fill: null
+        - name: ToTensor
+        - name: Normalize
+          mean: [0.6886, 0.6415, 0.6443]
+          std: [0.1830, 0.1852, 0.1849]
+      test:
+        - name: Resize
+          size:
+            - ${config.data.test_image_size}
+            - ${config.data.test_image_size}
+          interpolation: ${config.data.interpolation}
+        - name: ToTensor
+        - name: Normalize
+          mean: [0.6886, 0.6415, 0.6443]
+          std: [0.1830, 0.1852, 0.1849]
+
+    loader:
+      test: &loader_default
+        batch_size: 1
+        shuffle: false
+        drop_last: false
+        pin_memory: true
+        num_workers: 0
+      val:
+        <<: *loader_default
+        batch_size: 128
+        num_workers: 2
+      train:
+        <<: *loader_default
+        batch_size: 128
+        shuffle: true
+        drop_last: true
+        num_workers: 4
+
+  model:
+    model_name: ???
+    drop_rate: 0.3
+
+  optimizer:
+    builder: torch.optim.AdamW
+    lr: 0.001
+    betas: [0.9, 0.999]
+    weight_decay: 0.05
+
+  scheduler:
+    type: cosine
+    num_training_steps: ${config.train.epochs}
+    num_iter_per_step: 1
+    num_warmup_steps: 10
+
+  train:
+    epochs: 100
+    grad_accum_steps: 16
+    clip_grad_norm: true
+    max_norm: 5.0
+
+  test:
+    threshold: 0.5
+
+  checkpoint:
+    log_file: log.log
+    log_interval: 100
+    save_every: 1
+    keep_last: 1
+
+  hub:
+    repo_id: STomoya/${config.model.model_name}.st_safebooru_1k
+    commit_message: 'Add model'
+    private: false
+    create_pr: false
+    safe_serialization: both
