@@ -1,0 +1,9 @@
+
+__all__ = [
+    'DATASET_MEAN',
+    'DATASET_STD'
+]
+
+
+DATASET_MEAN = [0.6886, 0.6415, 0.6443]
+DATASET_STD  = [0.1830, 0.1852, 0.1849]
