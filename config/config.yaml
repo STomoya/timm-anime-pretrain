@@ -5,7 +5,7 @@ dryrun: false
 
 env:
   strategy: ddp
-  compile: false
+  compile: default
   amp: true
 
 reproduce:
