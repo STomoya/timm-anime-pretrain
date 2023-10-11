@@ -22,6 +22,8 @@ def maybe_push_to_hf_hub(
 
     if token != '':
         login(token=token)
+        if hasattr(model, 'dynamo_ctx'):
+            model = model._orig_mod
         return push_to_hf_hub(
             model=model, repo_id=repo_id, commit_message=commit_message,
             token=token, revision=revision, private=private,
