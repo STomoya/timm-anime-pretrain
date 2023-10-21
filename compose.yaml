@@ -26,6 +26,7 @@ services:
       - XDG_CACHE_HOME=${XDG_CACHE_HOME}
       - TORCH_EXTENSIONS_DIR=${XDG_CACHE_HOME}/${TORCH_EXTENSIONS_DIR}
       - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN}
+      - WANDB_API_KEY=${WANDB_API_KEY}
     entrypoint: []
     command: ["/bin/bash", "./command.sh"]
     user: ${UID:-1000}
