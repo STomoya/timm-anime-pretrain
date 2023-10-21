@@ -56,9 +56,12 @@ def main():
     criterion = nn.BCEWithLogitsLoss()
 
     # initialize training
+    wandb_args = (dict(wandb_project='timm-anime-pretrain', wandb_name=config.run.name, wandb_config=config)
+                  if cfg.wandb.wandb_logging and not config.dryrun else {})
     nest.initialize_training(
-        tcfg.epochs*len(trainloader), cfg.checkpoint.log_file, cfg.checkpoint.log_interval,
-        cfg.checkpoint.keep_last, [config, ], config.run.name, [3, 99]
+        tcfg.epochs*len(trainloader), log_file=cfg.checkpoint.log_file, log_interval=cfg.checkpoint.log_interval,
+        ckpt_keep_last=cfg.checkpoint.keep_last, to_log=[config, ], logger_name=config.run.name, log_gpu_memory_at=[],
+        **wandb_args
     )
 
     # serialization

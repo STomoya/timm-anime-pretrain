@@ -52,7 +52,10 @@ config:
           num_magnitude_bins: 31
           interpolation: ${config.data.interpolation}
           fill: null
-        - name: ToTensor
+        - name: ToImage
+        - name: ToDtype
+          dtype: pyobj:torch.float32
+          scale: true
         - name: Normalize
           mean: [0.6886, 0.6415, 0.6443]
           std: [0.1830, 0.1852, 0.1849]
@@ -62,7 +65,10 @@ config:
             - ${config.data.test_image_size}
             - ${config.data.test_image_size}
           interpolation: ${config.data.interpolation}
-        - name: ToTensor
+        - name: ToImage
+        - name: ToDtype
+          dtype: pyobj:torch.float32
+          scale: true
         - name: Normalize
           mean: [0.6886, 0.6415, 0.6443]
           std: [0.1830, 0.1852, 0.1849]
@@ -115,6 +121,9 @@ config:
     log_interval: 100
     save_every: 1
     keep_last: 1
+
+  wandb:
+    wandb_logging: false
 
   hub:
     repo_id: STomoya/${config.model.model_name}.st_safebooru_1k

@@ -3,3 +3,4 @@ timm
 huggingface_hub
 safetensors
 memray
+wandb

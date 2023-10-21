@@ -3,6 +3,7 @@
 checkpoint
 .cache
 .data
+wandb
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,linux
