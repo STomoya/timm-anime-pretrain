@@ -61,9 +61,10 @@ def set_input_size(model_name, data_config):
 def build_dataset(config):
     import os
     from storch.dataset import make_transform_from_config
+    from storch.hydra_utils import to_object
     from torchvision.transforms import RandAugment as TVRandAugment
 
-    train_transform = make_transform_from_config(config.transforms.train)
+    train_transform = make_transform_from_config(to_object(config.transforms.train))
 
     # replace RandAugment if any
     for i in range(len(train_transform.transforms)):
@@ -75,7 +76,7 @@ def build_dataset(config):
                 interpolation=augment_fn.interpolation, fill=augment_fn.fill
             )
 
-    test_transform = make_transform_from_config(config.transforms.test)
+    test_transform = make_transform_from_config(to_object(config.transforms.test))
 
     train_dataset = MultiLabelCSV(
         os.path.join(config.dataset_root, 'train'), config.label_mapping_csv, train_transform, config.label_is_indexed
