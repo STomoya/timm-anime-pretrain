@@ -1,14 +1,13 @@
-
 import argparse
-from collections import Counter
 import glob
 import json
 import os
-from functools import partial
 import shutil
+from collections import Counter
+from functools import partial
 
-from sklearn.model_selection import train_test_split
 import tqdm
+from sklearn.model_selection import train_test_split
 
 
 def load_jsonl(path):
@@ -21,13 +20,13 @@ def load_jsonl(path):
 def load_labels(path):
     with open(path, 'r') as fp:
         label_mapping_string = fp.read().strip().split('\n')
-    labels = set([name for name, *_ in map(lambda x:x.split(','), label_mapping_string)])
+    labels = {name for name, *_ in (x.split(',') for x in label_mapping_string)}
     return labels
 
 
 def split(iter, chunk_size):
     for i in range(0, len(iter), chunk_size):
-        yield iter[i:i + chunk_size]
+        yield iter[i : i + chunk_size]
 
 
 def save_chunks(csv_entries, data_split, folder, chunk_size=100_000):
@@ -37,7 +36,7 @@ def save_chunks(csv_entries, data_split, folder, chunk_size=100_000):
 
     filenames = []
     for i, chunk in enumerate(split(csv_entries, chunk_size)):
-        filename = os.path.join(folder, f"{data_split}-{i:04}.csv")
+        filename = os.path.join(folder, f'{data_split}-{i:04}.csv')
         with open(filename, 'w') as fp:
             fp.write('\n'.join(chunk))
         filenames.append(filename)
@@ -52,7 +51,7 @@ def convert_metadata_to_csv(metadata, image_root, label_set, safe=True, image_ex
 
     id = metadata['id']
     id_split = int(id) % 1000
-    created_at = metadata['created_at'] # datetime
+    created_at = metadata['created_at']  # datetime
     created_year = created_at[:4]
     image_path = os.path.join(image_root, created_year, f'{id_split:04}', f'{id}.{image_ext}')
 
@@ -62,7 +61,7 @@ def convert_metadata_to_csv(metadata, image_root, label_set, safe=True, image_ex
     if len(tags) == 0:
         return
 
-    return ','.join([image_path] + tags)
+    return ','.join([image_path, *tags])
 
 
 def limit_tag_appearance(csv_lines, limit):
@@ -74,7 +73,6 @@ def limit_tag_appearance(csv_lines, limit):
         x = range(len(counts))
         plt.bar(x, counts)
         plt.xticks(x, label_names, rotation=90)
-
 
     tag_counter = Counter()
     new_tag_counter = Counter()
@@ -91,7 +89,7 @@ def limit_tag_appearance(csv_lines, limit):
     _visualize(new_tag_counter.most_common(), len(new_csv_lines))
     plt.xlabel('tags')
     plt.ylabel('frequency')
-    plt.savefig(f'frequency')
+    plt.savefig('frequency')
     plt.tight_layout()
     plt.close()
 
@@ -117,7 +115,9 @@ def main():
     args = get_args()
 
     label_set = load_labels(args.label_mapping)
-    convert_to_csv = partial(convert_metadata_to_csv, image_root=args.image_root, label_set=label_set, safe=not args.all)
+    convert_to_csv = partial(
+        convert_metadata_to_csv, image_root=args.image_root, label_set=label_set, safe=not args.all
+    )
 
     metadata_files = glob.glob(os.path.join(args.folder, '*.json'))
     all_csv_entries = []
@@ -138,9 +138,9 @@ def main():
     if args.limit:
         train = limit_tag_appearance(train, args.limit)
 
-    print(f'Train samples     :', len(train))
-    print(f'Validation samples:', len(val))
-    print(f'Test samples      :', len(test))
+    print('Train samples     :', len(train))
+    print('Validation samples:', len(val))
+    print('Test samples      :', len(test))
 
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
@@ -150,5 +150,5 @@ def main():
     save_chunks(test, 'test', args.output, args.chunk_size)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

@@ -8,4 +8,5 @@ def only_on_primary(func):
     def inner(*args, **kwargs):
         if is_primary():
             return func(*args, **kwargs)
+
     return inner

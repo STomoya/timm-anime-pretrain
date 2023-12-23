@@ -1,4 +1,3 @@
-
 import argparse
 import glob
 import json
@@ -34,13 +33,13 @@ def main():
     for metadata_file in metadata_files:
         metadata_list = load_jsonl(metadata_file)
         if not args.all:
-            metadata_list = list(filter(lambda x:x['rating']=='s', metadata_list))
+            metadata_list = list(filter(lambda x: x['rating'] == 's', metadata_list))
         total += len(metadata_list)
-        tags = map(lambda x: x['tag_string_general'].split(' '), metadata_list)
+        tags = [x['tag_string_general'].split(' ') for x in metadata_list]
         counter.update(chain(*tags))
 
-    most_common = list(map(lambda x: (x[1][0], x[0], x[1][1]), enumerate(counter.most_common(args.num_labels))))
-    label_mapping = map(lambda x: f'{x[0]},{x[1]},{x[2]}', most_common)
+    most_common = [(x[1][0], x[0], x[1][1]) for x in enumerate(counter.most_common(args.num_labels))]
+    label_mapping = [f'{x[0]},{x[1]},{x[2]}' for x in most_common]
 
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
@@ -65,5 +64,5 @@ def main():
         plt.close()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

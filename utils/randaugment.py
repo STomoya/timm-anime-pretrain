@@ -3,16 +3,16 @@ from typing import Dict, List, Optional, Tuple
 
 import torch
 from torch import Tensor
+from torchvision.transforms import InterpolationMode
+from torchvision.transforms import functional as F
 
-from torchvision.transforms import functional as F, InterpolationMode
-
-__all__ = ["AutoAugmentPolicy", "AutoAugment", "RandAugment", "TrivialAugmentWide", "AugMix"]
+__all__ = ['RandAugment']
 
 
 def _apply_op(
     img: Tensor, op_name: str, magnitude: float, interpolation: InterpolationMode, fill: Optional[List[float]]
 ):
-    if op_name == "ShearX":
+    if op_name == 'ShearX':
         # magnitude should be arctan(magnitude)
         # official autoaug: (1, level, 0, 0, 1, 0)
         # https://github.com/tensorflow/models/blob/dd02069717128186b88afa8d857ce57d17957f03/research/autoaugment/augmentation_transforms.py#L290
@@ -29,7 +29,7 @@ def _apply_op(
             fill=fill,
             center=[0, 0],
         )
-    elif op_name == "ShearY":
+    elif op_name == 'ShearY':
         # magnitude should be arctan(magnitude)
         # See above
         img = F.affine(
@@ -42,7 +42,7 @@ def _apply_op(
             fill=fill,
             center=[0, 0],
         )
-    elif op_name == "TranslateX":
+    elif op_name == 'TranslateX':
         img = F.affine(
             img,
             angle=0.0,
@@ -52,7 +52,7 @@ def _apply_op(
             shear=[0.0, 0.0],
             fill=fill,
         )
-    elif op_name == "TranslateY":
+    elif op_name == 'TranslateY':
         img = F.affine(
             img,
             angle=0.0,
@@ -62,30 +62,30 @@ def _apply_op(
             shear=[0.0, 0.0],
             fill=fill,
         )
-    elif op_name == "Rotate":
+    elif op_name == 'Rotate':
         img = F.rotate(img, magnitude, interpolation=interpolation, fill=fill)
-    elif op_name == "Brightness":
+    elif op_name == 'Brightness':
         img = F.adjust_brightness(img, 1.0 + magnitude)
-    elif op_name == "Color":
+    elif op_name == 'Color':
         img = F.adjust_saturation(img, 1.0 + magnitude)
-    elif op_name == "Contrast":
+    elif op_name == 'Contrast':
         img = F.adjust_contrast(img, 1.0 + magnitude)
-    elif op_name == "Sharpness":
+    elif op_name == 'Sharpness':
         img = F.adjust_sharpness(img, 1.0 + magnitude)
-    elif op_name == "Posterize":
+    elif op_name == 'Posterize':
         img = F.posterize(img, int(magnitude))
-    elif op_name == "Solarize":
+    elif op_name == 'Solarize':
         img = F.solarize(img, magnitude)
-    elif op_name == "AutoContrast":
+    elif op_name == 'AutoContrast':
         img = F.autocontrast(img)
-    elif op_name == "Equalize":
+    elif op_name == 'Equalize':
         img = F.equalize(img)
-    elif op_name == "Invert":
+    elif op_name == 'Invert':
         img = F.invert(img)
-    elif op_name == "Identity":
+    elif op_name == 'Identity':
         pass
     else:
-        raise ValueError(f"The provided operator {op_name} is not recognized.")
+        raise ValueError(f'The provided operator {op_name} is not recognized.')
     return img
 
 
@@ -127,21 +127,21 @@ class RandAugment(torch.nn.Module):
     def _augmentation_space(self, num_bins: int, image_size: Tuple[int, int]) -> Dict[str, Tuple[Tensor, bool]]:
         return {
             # op_name: (magnitudes, signed)
-            "Identity": (torch.tensor(0.0), False),
-            "ShearX": (torch.linspace(0.0, 0.3, num_bins), True),
-            "ShearY": (torch.linspace(0.0, 0.3, num_bins), True),
-            "TranslateX": (torch.linspace(0.0, 150.0 / 331.0 * image_size[1], num_bins), True),
-            "TranslateY": (torch.linspace(0.0, 150.0 / 331.0 * image_size[0], num_bins), True),
-            "Rotate": (torch.linspace(0.0, 30.0, num_bins), True),
-            "Brightness": (torch.linspace(0.0, 0.9, num_bins), True),
-            "Color": (torch.linspace(0.0, 0.9, num_bins), True),
-            "Contrast": (torch.linspace(0.0, 0.9, num_bins), True),
-            "Sharpness": (torch.linspace(0.0, 0.9, num_bins), True),
+            'Identity': (torch.tensor(0.0), False),
+            'ShearX': (torch.linspace(0.0, 0.3, num_bins), True),
+            'ShearY': (torch.linspace(0.0, 0.3, num_bins), True),
+            'TranslateX': (torch.linspace(0.0, 150.0 / 331.0 * image_size[1], num_bins), True),
+            'TranslateY': (torch.linspace(0.0, 150.0 / 331.0 * image_size[0], num_bins), True),
+            'Rotate': (torch.linspace(0.0, 30.0, num_bins), True),
+            'Brightness': (torch.linspace(0.0, 0.9, num_bins), True),
+            'Color': (torch.linspace(0.0, 0.9, num_bins), True),
+            'Contrast': (torch.linspace(0.0, 0.9, num_bins), True),
+            'Sharpness': (torch.linspace(0.0, 0.9, num_bins), True),
             # disable transforms which changes colors significantly.
             # "Posterize": (8 - (torch.arange(num_bins) / ((num_bins - 1) / 4)).round().int(), False),
             # "Solarize": (torch.linspace(255.0, 0.0, num_bins), False),
-            "AutoContrast": (torch.tensor(0.0), False),
-            "Equalize": (torch.tensor(0.0), False),
+            'AutoContrast': (torch.tensor(0.0), False),
+            'Equalize': (torch.tensor(0.0), False),
         }
 
     def forward(self, img: Tensor) -> Tensor:
@@ -174,12 +174,12 @@ class RandAugment(torch.nn.Module):
 
     def __repr__(self) -> str:
         s = (
-            f"{self.__class__.__name__}("
-            f"num_ops={self.num_ops}"
-            f", magnitude={self.magnitude}"
-            f", num_magnitude_bins={self.num_magnitude_bins}"
-            f", interpolation={self.interpolation}"
-            f", fill={self.fill}"
-            f")"
+            f'{self.__class__.__name__}('
+            f'num_ops={self.num_ops}'
+            f', magnitude={self.magnitude}'
+            f', num_magnitude_bins={self.num_magnitude_bins}'
+            f', interpolation={self.interpolation}'
+            f', fill={self.fill}'
+            f')'
         )
         return s

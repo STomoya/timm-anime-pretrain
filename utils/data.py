@@ -3,8 +3,8 @@ import os
 from typing import Callable
 
 import numpy as np
-from torch.utils.data import Dataset
 from PIL import Image
+from torch.utils.data import Dataset
 
 
 class MultiLabelCSV(Dataset):
@@ -22,9 +22,8 @@ class MultiLabelCSV(Dataset):
         transform (Callable): callable for transforming images.
         label_is_indexed (bool, option): If True, labels in the dataset folder is already indexed. Default: False.
     """
-    def __init__(self,
-        dataset_folder: str, label_mapping: str, transform: Callable, label_is_indexed: bool=False
-    ):
+
+    def __init__(self, dataset_folder: str, label_mapping: str, transform: Callable, label_is_indexed: bool = False):
         super().__init__()
         csv_files = glob.glob(os.path.join(dataset_folder, '*.csv'))
         self.samples = []
@@ -34,7 +33,7 @@ class MultiLabelCSV(Dataset):
         with open(label_mapping, 'r') as fp:
             label_mapping = [line.split(',') for line in fp.read().strip().split('\n')]
         self.label_mapping = {name: int(index) for name, index, *_ in label_mapping}
-        self.label_names = sorted(list(self.label_mapping.keys()), key=lambda key: self.label_mapping[key])
+        self.label_names = sorted(self.label_mapping.keys(), key=lambda key: self.label_mapping[key])
         self.label_name_set = set(self.label_mapping.keys())
 
         self.transform = transform
