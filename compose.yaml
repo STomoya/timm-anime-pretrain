@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: ./docker/torch/Dockerfile
       args:
-        - BASE_TORCH_VERSION=2.1.0
-        - BASE_CUDA_VERSION=11.8
+        - BASE_TORCH_VERSION=2.2.0
+        - BASE_CUDA_VERSION=12.1
         - BASE_CUDNN_VERSION=8
         - UID=${UID}
         - USERNAME=torchuser
