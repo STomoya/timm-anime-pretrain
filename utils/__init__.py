@@ -66,22 +66,31 @@ def build_dataset(config):
 
     from storch.dataset import make_transform_from_config
     from storch.hydra_utils import to_object
-    from torchvision.transforms import RandAugment as TVRandAugment
+    # from torchvision.transforms import RandAugment as TVRandAugment
 
     train_transform = make_transform_from_config(to_object(config.transforms.train))
 
     # replace RandAugment if any
-    for i in range(len(train_transform.transforms)):
-        augment_fn = train_transform.transforms[i]
-        if isinstance(augment_fn, TVRandAugment):
-            print('found pytorch RandAugment')
-            train_transform.transforms[i] = RandAugment(
-                num_ops=augment_fn.num_ops,
-                magnitude=augment_fn.magnitude,
-                num_magnitude_bins=augment_fn.num_magnitude_bins,
-                interpolation=augment_fn.interpolation,
-                fill=augment_fn.fill,
-            )
+    # for i in range(len(train_transform.transforms)):
+    #     augment_fn = train_transform.transforms[i]
+    #     if isinstance(augment_fn, TVRandAugment):
+    #         print('found pytorch RandAugment')
+    #         train_transform.transforms[i] = RandAugment(
+    #             num_ops=augment_fn.num_ops,
+    #             magnitude=augment_fn.magnitude,
+    #             num_magnitude_bins=augment_fn.num_magnitude_bins,
+    #             interpolation=augment_fn.interpolation,
+    #             fill=augment_fn.fill,
+    #         )
+    #     elif TVRandAugmentv2 is not None and isinstance(augment_fn, TVRandAugmentv2):
+    #         print('found pytorch v2.RandAugment')
+    #         train_transform.transforms[i] = RandAugmentv2(
+    #             num_ops=augment_fn.num_ops,
+    #             magnitude=augment_fn.magnitude,
+    #             num_magnitude_bins=augment_fn.num_magnitude_bins,
+    #             interpolation=augment_fn.interpolation,
+    #             fill=augment_fn.fill,
+    #         )
 
     test_transform = make_transform_from_config(to_object(config.transforms.test))
 
