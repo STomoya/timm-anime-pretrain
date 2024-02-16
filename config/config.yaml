@@ -7,6 +7,7 @@ env:
   strategy: ddp
   compile: default
   amp: true
+  mm_tf32: true
 
 reproduce:
   seed: 3407
@@ -37,6 +38,10 @@ config:
 
     transforms:
       train:
+        - name: ToImage
+        - name: ToDtype
+          dtype: pyobj:torch.float32
+          scale: true
         - name: RandomResizedCrop
           # scale is kept high.
           scale: [0.5, 1.0]
@@ -50,12 +55,8 @@ config:
           num_ops: 2
           magnitude: 9
           num_magnitude_bins: 31
-          interpolation: ${config.data.interpolation}
+          interpolation: 2
           fill: null
-        - name: ToImage
-        - name: ToDtype
-          dtype: pyobj:torch.float32
-          scale: true
         - name: Normalize
           mean: [0.6886, 0.6415, 0.6443]
           std: [0.1830, 0.1852, 0.1849]

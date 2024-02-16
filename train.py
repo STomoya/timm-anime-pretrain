@@ -12,6 +12,9 @@ import utils
 def main():
     config, folder, save_config = utils.init_project()
 
+    if config.env.mm_tf32:
+        torch.backends.cuda.matmul.allow_tf32 = True
+
     # alias
     cfg = config.config
     tcfg = cfg.train
