@@ -4,6 +4,7 @@ import numpy as np
 import timm
 import torch
 import torch.nn as nn
+from storch.hydra_utils import to_object
 from storch.nest import NeST
 
 import utils
@@ -63,7 +64,7 @@ def main():
     model_args = utils.create_model_args(cfg.model)
 
     # build optimizer
-    optimizer = nest.build_optimizer(**cfg.optimizer, parameters=model.parameters())
+    optimizer = nest.build_optimizer(**to_object(cfg.optimizer), parameters=model.parameters())
 
     # scheduler
     scheduler = nest.build_scheduler(optimizer, **cfg.scheduler)
@@ -95,7 +96,7 @@ def main():
     )
 
     # serialization
-    mc, oc = nest.prepare_for_checkpointing(optimizer)
+    mc, oc = nest.prepare_stateful(model, optimizer)
     nest.set_best_model_keeper('loss', 'minimize', mc)
     nest.register(model=mc, optimizer=oc, scheduler=scheduler)
     nest.load_latest()

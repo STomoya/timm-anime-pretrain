@@ -1,6 +1,5 @@
-git+https://github.com/STomoya/storch
+git+https://github.com/STomoya/storch@v0.5.13
 timm
 huggingface_hub
 safetensors
-memray
 wandb
