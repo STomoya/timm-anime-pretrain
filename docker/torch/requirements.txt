@@ -1,5 +1,8 @@
-git+https://github.com/STomoya/storch@v0.5.13
+git+https://github.com/STomoya/storch
 timm
 huggingface_hub
 safetensors
 wandb
+lightly
+datasets[vision]
+pillow==10.4.0
