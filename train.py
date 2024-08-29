@@ -229,12 +229,13 @@ def main():
     else:
         metrics = None
 
-    utils.maybe_push_to_hf_hub(
-        model,
-        **cfg.hub,
-        model_card=dict(details=dict(metrics=metrics)),
-        model_args=model_args,
-    )
+    if cfg.hub.repo_id is not None:
+        utils.maybe_push_to_hf_hub(
+            model,
+            **cfg.hub,
+            model_card=dict(details=dict(metrics=metrics)),
+            model_args=model_args,
+        )
     nest.finish_wandb()
 
 
