@@ -58,7 +58,9 @@ def main():
             mean=utils.DATASET_MEAN,
             std=utils.DATASET_STD,
             tag=cfg.hub.repo_id.split('.')[-1],
-        ),
+        )
+        if not cfg.model.get('pretrained', False)
+        else {},
     )
     model_args = utils.create_model_args(cfg.model)
 
