@@ -52,8 +52,12 @@ def init_project(
     return config, folder, save_config
 
 
-def set_input_size(model_name, data_config):
+def set_input_size(model_name: str, data_config):
     import timm
+
+    if 'hf_hub' in model_name:
+        model_name = model_name.split('/')[-1]
+        model_name = model_name.split('.')[0]
 
     pretrained_cfg = timm.models.get_pretrained_cfg(model_name)
     data_config.image_size = pretrained_cfg.input_size[-1]
