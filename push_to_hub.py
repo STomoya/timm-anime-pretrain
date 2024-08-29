@@ -30,7 +30,7 @@ def main():
     cfg = config.config
 
     # setup input size
-    utils.set_input_size(cfg.model.model_name, cfg.data)
+    # utils.set_input_size(cfg.model.model_name, cfg.data)
 
     # create dataset for determining number of classes.
     train, _, _ = utils.build_dataset(cfg.data)
