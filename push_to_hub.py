@@ -36,6 +36,8 @@ def main():
     train, _, _ = utils.build_dataset(cfg.data)
 
     # build model
+    cfg.model.pop('pretrained', None)
+    tag = cfg.hub.repo_id.split('.')[-1]
     model = timm.create_model(
         **cfg.model,
         num_classes=train.num_classes,
@@ -46,7 +48,7 @@ def main():
             mean=utils.DATASET_MEAN,
             std=utils.DATASET_STD,
             hf_hub_id=cfg.hub.repo_id,
-            tag='st_safebooru_1k',
+            tag=tag,
         ),
     )
     # collect args for building model.
